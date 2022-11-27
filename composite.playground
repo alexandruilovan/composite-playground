@@ -1,0 +1,84 @@
+import UIKit
+
+protocol Piece {
+    var parent: Piece? { get set }
+    
+    func add(piece: Piece)
+    func description() -> String
+    func isBranch() -> Bool
+}
+
+class Leaf: Piece {
+    func add(piece: Piece) {}
+    
+    func isBranch() -> Bool {
+        false
+    }
+    
+    var parent: Piece?
+    
+    func description() -> String {
+        return "Hello, I am Leaf"
+    }
+}
+
+class Branch: Piece {
+    var parent: Piece?
+    
+    private var children = [Piece]()
+    
+    func add(piece: Piece) {
+        var piece = piece
+        piece.parent = self
+        children.append(piece)
+    }
+    
+    func isBranch() -> Bool {
+        return true
+    }
+    
+    func description() -> String {
+        let result = children.map ({ $0.description() })
+        return "Say hello leaves: \(result.joined(separator: ", "))"
+    }
+}
+
+class TreeBuilder {
+    
+    static func buildOneSided(with left: Piece, and right: Piece) {
+        if left.isBranch() {
+            left.add(piece: right)
+        }
+    }
+}
+
+class TreeApp {
+    
+    func test() {
+        
+        let tree = Branch()
+        
+        let branch1 = Branch()
+        branch1.add(piece: Leaf())
+        branch1.add(piece: Leaf())
+        
+        let branch2 = Branch()
+        branch2.add(piece: Leaf())
+        branch2.add(piece: Leaf())
+        
+        let branch3 = Branch()
+        let branch4 = Branch()
+        branch3.add(piece: Leaf())
+        branch3.add(piece: branch4)
+        
+        tree.add(piece: branch1)
+        tree.add(piece: branch2)
+        
+        tree.description()
+        
+        TreeBuilder.buildOneSided(with: tree, and: Leaf())
+    }
+}
+
+let treeApp = TreeApp()
+treeApp.test()
